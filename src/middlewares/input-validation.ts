@@ -7,14 +7,16 @@ export const inputValidation = (
   res: Response,
   next: NextFunction
 ) => {
-  const errors = validationResult(req).formatWith((error) => ({
-    message: error.msg,
-    type: error.type,
-  }));
+  const result = validationResult(req);
 
-  if (!errors.isEmpty()) {
+  if (!result.isEmpty()) {
+    const formattedErrors = result.formatWith((error: any) => ({
+      message: error.msg,
+      field: error.param,
+    }));
+
     return res.status(HttpResponses.BAD_REQUEST).send({
-      errorsMessages: errors.array(),
+      errorsMessages: formattedErrors.array({ onlyFirstError: true }),
     });
   }
 
