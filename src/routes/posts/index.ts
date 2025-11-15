@@ -45,12 +45,12 @@ postsRouter.post(
     const blog = blogsData.find((v) => v.id === blogId);
 
     if (!blog)
-      return res
-        .status(HttpResponses.NOT_FOUND)
-        .send(`Blog with id ${blogId} doesn't exist!`);
+      return res.status(HttpResponses.NOT_FOUND).send({
+        errorsMessages: [{ field: "blogId", message: "Invalid blogId" }],
+      });
 
     const newPost = {
-      id: String(postsData.length),
+      id: String(postsData.length + 1),
       title,
       shortDescription,
       content,
@@ -77,9 +77,9 @@ postsRouter.put(
       req.body as PutPostType;
 
     if (!post)
-      return res
-        .status(HttpResponses.NOT_FOUND)
-        .send(`Post with id ${id} doesn't exist!`);
+      return res.status(HttpResponses.NOT_FOUND).send({
+        errorsMessages: [{ field: "blogId", message: "Invalid blogId" }],
+      });
 
     const blog = blogsData.find((v) => v.id === blogId);
 

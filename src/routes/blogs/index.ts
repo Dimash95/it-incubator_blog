@@ -39,7 +39,7 @@ blogsRouter.post(
     const { name, description, websiteUrl } = req.body as PostBlogType;
 
     const newBlog = {
-      id: String(data.length),
+      id: String(data.length + 1),
       name,
       description,
       websiteUrl,
