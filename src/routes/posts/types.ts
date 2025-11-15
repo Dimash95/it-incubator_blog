@@ -12,7 +12,6 @@ export type PostPostType = {
   shortDescription: string;
   content: string;
   blogId: string;
-  blogName: string;
 };
 
 export type PutPostType = {
@@ -20,5 +19,4 @@ export type PutPostType = {
   shortDescription: string;
   content: string;
   blogId: string;
-  blogName: string;
 };

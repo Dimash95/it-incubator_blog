@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { BlogType, PostBlogType, PutBlogType } from "./types";
 import dataJson from "../../blogsData.json";
 import { HttpResponses } from "../../const";
+import { validateBlogBody } from "./validation";
 
 let data: BlogType[] = dataJson;
 
@@ -27,8 +28,8 @@ blogsRouter.get("/", (req: Request, res: Response) => {
 blogsRouter.post("/", (req: Request, res: Response) => {
   const { name, description, websiteUrl } = req.body as PostBlogType;
 
-  // const validationResult = validateBlogBody(req.body, res);
-  // if (validationResult) return;
+  const validation = validateBlogBody(req.body, res);
+  if (validation) return;
 
   const newBlog = {
     id: String(data.length),
@@ -45,8 +46,8 @@ blogsRouter.put("/:id", (req: Request, res: Response) => {
   const { id } = req.params;
   const blog = data.find((v) => v.id === id);
 
-  // const validationResult = validateVideoBody(req.body, res);
-  // if (validationResult) return;
+  const validation = validateBlogBody(req.body, res);
+  if (validation) return;
 
   const { name, description, websiteUrl } = req.body as PutBlogType;
 
