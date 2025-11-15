@@ -1,8 +1,8 @@
 export type BlogType = {
-  id: number;
-  name: string;
-  description: string;
-  websiteUrl: string;
+  id: string;
+  name: string; // 15
+  description: string; // 500
+  websiteUrl: string; // 100
 };
 
 export type PostBlogType = {

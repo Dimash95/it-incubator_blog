@@ -1,5 +1,5 @@
 import express from "express";
-import { apiRouter } from "./router";
+import { apiRouter } from "./routes";
 
 const app = express();
 const port = 6060;

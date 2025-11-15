@@ -1,23 +1,16 @@
-import express from "express";
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import { BlogType, PostBlogType, PutBlogType } from "./types";
-import dataJson from "./data.json";
-import { HttpResponses } from "./const";
+import dataJson from "../../blogsData.json";
+import { HttpResponses } from "../../const";
 
 let data: BlogType[] = dataJson;
 
-const apiRouter = express.Router();
+const blogsRouter = express.Router();
 
-apiRouter.delete("/testing/all-data", (req: Request, res: Response) => {
-  data = [];
-
-  return res.sendStatus(HttpResponses.NO_CONTENT);
-});
-
-apiRouter.get("/blogs/:id", (req: Request, res: Response) => {
+blogsRouter.get("/:id", (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const blog = data.find((v) => v.id === Number(id));
+  const blog = data.find((v) => v.id === id);
 
   if (!blog)
     return res
@@ -27,18 +20,18 @@ apiRouter.get("/blogs/:id", (req: Request, res: Response) => {
   return res.status(HttpResponses.OK).send(blog);
 });
 
-apiRouter.get("/blogs", (req: Request, res: Response) => {
+blogsRouter.get("/", (req: Request, res: Response) => {
   res.status(HttpResponses.OK).send(data);
 });
 
-apiRouter.post("/blogs", (req: Request, res: Response) => {
+blogsRouter.post("/", (req: Request, res: Response) => {
   const { name, description, websiteUrl } = req.body as PostBlogType;
 
   // const validationResult = validateBlogBody(req.body, res);
   // if (validationResult) return;
 
   const newBlog = {
-    id: data.length,
+    id: String(data.length),
     name,
     description,
     websiteUrl,
@@ -48,9 +41,9 @@ apiRouter.post("/blogs", (req: Request, res: Response) => {
   return res.status(HttpResponses.CREATED).send(newBlog);
 });
 
-apiRouter.put("/blogs/:id", (req: Request, res: Response) => {
+blogsRouter.put("/:id", (req: Request, res: Response) => {
   const { id } = req.params;
-  const blog = data.find((v) => v.id === Number(id));
+  const blog = data.find((v) => v.id === id);
 
   // const validationResult = validateVideoBody(req.body, res);
   // if (validationResult) return;
@@ -69,9 +62,9 @@ apiRouter.put("/blogs/:id", (req: Request, res: Response) => {
   return res.sendStatus(HttpResponses.NO_CONTENT);
 });
 
-apiRouter.delete("/blogs/:id", (req: Request, res: Response) => {
+blogsRouter.delete("/:id", (req: Request, res: Response) => {
   const { id } = req.params;
-  const blogIndex = data.findIndex((v) => v.id === Number(id));
+  const blogIndex = data.findIndex((v) => v.id === id);
 
   if (blogIndex === -1) {
     return res
@@ -84,4 +77,4 @@ apiRouter.delete("/blogs/:id", (req: Request, res: Response) => {
   return res.sendStatus(HttpResponses.NO_CONTENT);
 });
 
-export { apiRouter };
+export { blogsRouter };
