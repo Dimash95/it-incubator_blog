@@ -12,7 +12,7 @@ let postsData: PostType[] = postsJson;
 
 const dropRouter = express.Router();
 
-dropRouter.delete("/testing/all-data", (req: Request, res: Response) => {
+dropRouter.delete("/", (req: Request, res: Response) => {
   blogsData = [];
   postsData = [];
 

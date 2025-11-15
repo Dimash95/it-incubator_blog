@@ -5,6 +5,6 @@ import { postsRouter } from "./posts";
 
 export const apiRouter = express.Router();
 
-apiRouter.use("/", dropRouter);
+apiRouter.use("/testing/all-data", dropRouter);
 apiRouter.use("/blogs", blogsRouter);
 apiRouter.use("/posts", postsRouter);
