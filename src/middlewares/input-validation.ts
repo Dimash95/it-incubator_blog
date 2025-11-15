@@ -15,7 +15,7 @@ export const inputValidation = (
     .array({ onlyFirstError: true })
     .map((err: any) => ({
       message: err.msg,
-      field: err.param,
+      field: err.path || err.param,
     }));
 
   return res.status(HttpResponses.BAD_REQUEST).send({
