@@ -1,66 +1,37 @@
-import { Response } from "express";
-import { HttpResponses } from "../../const";
-import { PostPostType, PutPostType } from "./types";
+import { body } from "express-validator";
 
-export const validatePostBody = (
-  body: PostPostType | PutPostType,
-  res: Response
-) => {
-  const errors: { message: string; field: string }[] = [];
+export const postValidation = [
+  body("title")
+    .trim()
+    .isString()
+    .withMessage("Title must be a string")
+    .isLength({ min: 1 })
+    .withMessage("Title is required")
+    .isLength({ max: 30 })
+    .withMessage("Title must be ≤ 30 characters"),
 
-  const { title, shortDescription, content, blogId } = body;
+  body("shortDescription")
+    .trim()
+    .isString()
+    .withMessage("ShortDescription must be a string")
+    .isLength({ min: 1 })
+    .withMessage("ShortDescription is required")
+    .isLength({ max: 100 })
+    .withMessage("ShortDescription must be ≤ 100 characters"),
 
-  // TITLE
-  if (!title || typeof title !== "string" || !title.trim()) {
-    errors.push({ field: "title", message: "Title is required" });
-  } else if (title.length > 30) {
-    errors.push({
-      field: "title",
-      message: "Title must be ≤ 30 characters",
-    });
-  }
+  body("content")
+    .trim()
+    .isString()
+    .withMessage("Content must be a string")
+    .isLength({ min: 1 })
+    .withMessage("Content is required")
+    .isLength({ max: 1000 })
+    .withMessage("Content must be ≤ 1000 characters"),
 
-  // SHORT DESCRIPTION
-  if (
-    !shortDescription ||
-    typeof shortDescription !== "string" ||
-    !shortDescription.trim()
-  ) {
-    errors.push({
-      field: "shortDescription",
-      message: "ShortDescription is required",
-    });
-  } else if (shortDescription.length > 100) {
-    errors.push({
-      field: "shortDescription",
-      message: "ShortDescription must be ≤ 100 characters",
-    });
-  }
-
-  // CONTENT
-  if (!content || typeof content !== "string" || !content.trim()) {
-    errors.push({ field: "content", message: "Content is required" });
-  } else if (content.length > 1000) {
-    errors.push({
-      field: "content",
-      message: "Content must be ≤ 1000 characters",
-    });
-  }
-
-  // BLOG ID
-  if (!blogId || typeof blogId !== "string") {
-    errors.push({
-      field: "blogId",
-      message: "BlogId is required",
-    });
-  }
-
-  // RETURN IF ERRORS
-  if (errors.length > 0) {
-    return res.status(HttpResponses.BAD_REQUEST).send({
-      errorsMessages: errors,
-    });
-  }
-
-  return false;
-};
+  body("blogId")
+    .isString()
+    .withMessage("BlogId must be a string")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("BlogId is required"),
+];

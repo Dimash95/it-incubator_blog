@@ -6,7 +6,10 @@ import blogsJson from "../../blogsData.json";
 import { PostType, PostPostType, PutPostType } from "./types";
 import { BlogType } from "../blogs/types";
 
-import { validatePostBody } from "./validation";
+import { postValidation } from "./validation";
+import { basicAuth } from "../../middlewares/auth";
+import { inputValidation } from "../../middlewares/input-validation";
+
 import { HttpResponses } from "../../const";
 
 let blogsData: BlogType[] = blogsJson;
@@ -31,63 +34,71 @@ postsRouter.get("/", (req: Request, res: Response) => {
   res.status(HttpResponses.OK).send(postsData);
 });
 
-postsRouter.post("/", (req: Request, res: Response) => {
-  const validation = validatePostBody(req.body, res);
-  if (validation) return;
+postsRouter.post(
+  "/",
+  basicAuth,
+  postValidation,
+  inputValidation,
+  (req: Request, res: Response) => {
+    const { title, shortDescription, content, blogId } =
+      req.body as PostPostType;
+    const blog = blogsData.find((v) => v.id === blogId);
 
-  const { title, shortDescription, content, blogId } = req.body as PostPostType;
-  const blog = blogsData.find((v) => v.id === blogId);
+    if (!blog)
+      return res
+        .status(HttpResponses.NOT_FOUND)
+        .send(`Blog with id ${blogId} doesn't exist!`);
 
-  if (!blog)
-    return res
-      .status(HttpResponses.NOT_FOUND)
-      .send(`Blog with id ${blogId} doesn't exist!`);
+    const newPost = {
+      id: String(postsData.length),
+      title,
+      shortDescription,
+      content,
+      blogId,
+      blogName: blog.name,
+    };
 
-  const newPost = {
-    id: String(postsData.length),
-    title,
-    shortDescription,
-    content,
-    blogId,
-    blogName: blog.name,
-  };
+    postsData.push(newPost);
 
-  postsData.push(newPost);
+    return res.status(HttpResponses.CREATED).send(newPost);
+  }
+);
 
-  return res.status(HttpResponses.CREATED).send(newPost);
-});
+postsRouter.put(
+  "/:id",
+  basicAuth,
+  postValidation,
+  inputValidation,
+  (req: Request, res: Response) => {
+    const { id } = req.params;
+    const post = postsData.find((v) => v.id === id);
 
-postsRouter.put("/:id", (req: Request, res: Response) => {
-  const validation = validatePostBody(req.body, res);
-  if (validation) return;
+    const { title, shortDescription, content, blogId } =
+      req.body as PutPostType;
 
-  const { id } = req.params;
-  const post = postsData.find((v) => v.id === id);
+    if (!post)
+      return res
+        .status(HttpResponses.NOT_FOUND)
+        .send(`Post with id ${id} doesn't exist!`);
 
-  const { title, shortDescription, content, blogId } = req.body as PutPostType;
+    const blog = blogsData.find((v) => v.id === blogId);
 
-  if (!post)
-    return res
-      .status(HttpResponses.NOT_FOUND)
-      .send(`Post with id ${id} doesn't exist!`);
+    if (!blog)
+      return res
+        .status(HttpResponses.NOT_FOUND)
+        .send(`Blog with id ${blogId} doesn't exist!`);
 
-  const blog = blogsData.find((v) => v.id === blogId);
+    post.title = title;
+    post.shortDescription = shortDescription;
+    post.content = content;
+    post.blogId = blogId;
+    post.blogName = blog.name;
 
-  if (!blog)
-    return res
-      .status(HttpResponses.NOT_FOUND)
-      .send(`Blog with id ${blogId} doesn't exist!`);
+    return res.sendStatus(HttpResponses.NO_CONTENT);
+  }
+);
 
-  post.title = title;
-  post.shortDescription = shortDescription;
-  post.content = content;
-  post.blogId = blogId;
-  post.blogName = blog.name;
-
-  return res.sendStatus(HttpResponses.NO_CONTENT);
-});
-
-postsRouter.delete("/:id", (req: Request, res: Response) => {
+postsRouter.delete("/:id", basicAuth, (req: Request, res: Response) => {
   const { id } = req.params;
   const postIndex = postsData.findIndex((v) => v.id === id);
 
